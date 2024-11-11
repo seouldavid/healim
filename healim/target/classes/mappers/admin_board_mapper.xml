@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+	<!-- 자유게시판 총 게시글 수 -->
+	<select id="freeboard_count" resultType="int">
+    SELECT COUNT(*) FROM tb_bbs WHERE bbs_id = 'FREE'
+	</select>
+	
+	<!-- 자유게시판 게시글 리스트 -->
+ 	<select id="freeboard_list" parameterType="Map" resultType="com.ict.healim.vo.BoardVO">
+	    SELECT * FROM tb_bbs 
+	    WHERE bbs_id = 'FREE' and wr_active = 0
+ 	    ORDER BY start_dt DESC 
+	    LIMIT #{limit} OFFSET #{offset}
+	</select>
+  	
+	<!-- 자유게시판 원리스트-->
+  	<select id="freeboard_detail" parameterType="String" resultType="com.ict.healim.vo.BoardVO">
+    	select * FROM tb_bbs where wr_id = #{wr_id}
+    </select>
+  	
+	<!-- 자유게시판 글숨기기-->
+  	<update id="freeboard_hide" parameterType="String">
+    	update tb_bbs set wr_active = 1 where wr_id = #{wr_id}
+    </update>
+
+	<!-- 자유게시판 글삭제-->
+  	<update id="freeboard_delete" parameterType="String">
+    	update tb_bbs set wr_active = 1 where wr_id = #{wr_id}
+    </update>
+    
+    
+    <!-- 상담내역 총 게시글 수 -->
+	<select id="consultation_count" resultType="int">
+    SELECT COUNT(*) FROM tb_bbs WHERE bbs_id = 'CONS' AND wr_active = 0
+	</select>
+    
+  	<!-- 상담내역 게시글 리스트 -->
+ 	<select id="consultation_list" parameterType="Map" resultType="com.ict.healim.vo.BoardVO">
+	    SELECT * FROM tb_bbs 
+	    WHERE bbs_id = 'CONS' and wr_active = 0
+ 	    ORDER BY start_dt DESC 
+	    LIMIT #{limit} OFFSET #{offset}
+	</select>
+	
+  	<!-- 상담내역 게시글 디테일 -->
+	<select id="consultation_counselor" parameterType="String" resultType="com.ict.healim.vo.BoardVO">
+    	select * from tb_bbs where wr_id = #{wr_id}
+    </select>
+    
+    <!-- 상담내역 게시글 답글 달기-->
+    <!-- 문의내역 게시글 답글 달기도 동일하다-->
+<update id="consultation_answer" parameterType="com.ict.healim.vo.BoardVO">
+    update tb_bbs
+    set 
+        admin_answer = 'Y',
+        wr_couns_ans = #{wr_couns_ans}
+        <if test="atch_file_id != null and atch_file_id != ''">
+            , atch_file_id = #{atch_file_id}
+        </if>
+    where wr_id = #{wr_id}
+</update>
+    
+    <!-- 상담내역 삭제-->
+  	<update id="consultation_delete" parameterType="String">
+    	update tb_bbs set wr_active = 1 where wr_id = #{wr_id}
+    </update>
+    
+ 
+     <!-- 문의내역 총 게시글 수 -->
+	<select id="questions_count" resultType="int">
+    SELECT COUNT(*) FROM tb_bbs WHERE bbs_id = 'INQU'
+	</select>
+       	<!-- 문의내역 게시글 리스트 -->
+ 	<select id="questions_list" parameterType="Map" resultType="com.ict.healim.vo.BoardVO">
+	    SELECT * FROM tb_bbs 
+	    WHERE bbs_id = 'INQU' and wr_active = 0
+ 	    ORDER BY start_dt DESC 
+	    LIMIT #{limit} OFFSET #{offset}
+	</select> 
+	
+  	<!-- 문의내역 게시글 디테일 -->
+	<select id="questions_qna" parameterType="String" resultType="com.ict.healim.vo.BoardVO">
+    	select * from tb_bbs where wr_id = #{wr_id}
+    </select>
+    
+    <!-- 문의내역 삭제-->
+  	<update id="questions_delete" parameterType="String">
+    	update tb_bbs set wr_active = 1 where wr_id = #{wr_id}
+    </update>
+   
+     <!-- 공지사항 총 게시글 수 -->
+	<select id="notice_count" resultType="int">
+    SELECT COUNT(*) FROM tb_bbs WHERE bbs_id = 'NOTI'
+	</select>
+       	<!-- 공지사항 게시글 리스트 -->
+ 	<select id="notice_list" parameterType="Map" resultType="com.ict.healim.vo.BoardVO">
+	    SELECT * FROM tb_bbs 
+	    WHERE bbs_id = 'NOTI' and wr_active = 0
+ 	    ORDER BY start_dt DESC 
+	    LIMIT #{limit} OFFSET #{offset}
+	</select> 
+	
+	<!-- 공지사항 삭제-->
+	<insert id="notice_insert" parameterType="com.ict.healim.vo.BoardVO">
+	insert into tb_bbs(bbs_id, wr_active, group_id, wr_subject, wr_content, answer_at, parent_id, answer_lc, 
+	sort_ordr, rdcnt, use_at, start_dt, end_dt, mber_id, mber_nm, password, atch_file_id, old_atch_file_id, h_id, h_score, 
+	crt_by, crt_dt, upd_by, upd_dt, wr_couns_ans, admin_answer, notice_top)
+	values('NOTI', 0, 0, #{wr_subject}, #{wr_content}, 'N', 0, 0, 
+	0, 0, 'Y', now(), 0, #{mber_id}, #{mber_nm}, '', '', '', 0, 0, 
+	#{mber_id}, now(), '', now(), '', 'N', 0)
+	</insert>
+	
+  	<!-- 공지사항 게시글 디테일 -->
+	<select id="notice_announcement" parameterType="String" resultType="com.ict.healim.vo.BoardVO">
+    	select * from tb_bbs where wr_id = #{wr_id}
+    </select>
+    
+    <!-- 공지사항 삭제-->
+  	<update id="notice_delete" parameterType="String">
+    	update tb_bbs set wr_active = 1 where wr_id = #{wr_id}
+    </update>
+   
+   <!-- 공지사항 수정  -->
+   <update id="notice_update" parameterType="com.ict.healim.vo.BoardVO">
+    	update tb_bbs 
+    	set mber_nm = #{mber_nm}, wr_subject = #{wr_subject}, wr_content = #{wr_content}, upd_by = #{upd_by}, upd_dt = now()
+		<if test="atch_file_id != null and atch_file_id != ''">
+            , atch_file_id = #{atch_file_id}
+        </if>
+    	where wr_id = #{wr_id}
+    </update>
+    
+    <!-- 어드민 보드 총 게시글 수 -->
+	<select id="admin_board_count" resultType="int">
+    SELECT COUNT(*) FROM tb_bbs WHERE wr_active = 0 AND bbs_id != 'REVIEW'
+	</select>
+	
+	
+    <!-- 어드민 보드 총 게시글 수 -->
+	<select id="admin_board_sleep_count" resultType="int">
+    SELECT COUNT(*) FROM tb_bbs WHERE wr_active = 1 AND bbs_id != 'REVIEW'
+	</select>
+	
+	<!-- 어드민 보드 게시글 리스트 -->
+ 	<select id="admin_board_list" parameterType="Map" resultType="com.ict.healim.vo.BoardVO">
+	    SELECT * FROM tb_bbs 
+	    WHERE wr_active = 0
+	    AND bbs_id != 'REVIEW'
+ 	    ORDER BY start_dt DESC 
+	    LIMIT #{limit} OFFSET #{offset}
+	</select> 
+	
+	<!-- 어드민 보드 게시글 리스트 -->
+ 	<select id="admin_board_sleep_list" parameterType="Map" resultType="com.ict.healim.vo.BoardVO">
+	    SELECT * FROM tb_bbs 
+	    WHERE wr_active = 1 
+	    AND bbs_id != 'REVIEW'
+ 	    ORDER BY upd_dt DESC 
+	    LIMIT #{limit} OFFSET #{offset}
+	</select> 
+	
+	<!-- 게시물 복구 쿼리 -->
+    <update id="restore_boards" parameterType="List">
+        UPDATE tb_bbs
+        SET wr_active = 0  <!-- 게시물 활성화 상태로 복구 -->
+        WHERE wr_id IN
+        <foreach collection="wrIds" item="wrId" open="(" separator="," close=")">
+            #{wrId}
+        </foreach>
+    </update>
+	
+	 <!-- 신고 게시물 총 게시물 수 -->
+	<select id="issue_count" resultType="int">
+    SELECT COUNT(*) FROM tb_bbs WHERE wr_active = 0 AND bbs_id != 'REVIEW' AND issue != 0
+	</select>
+	
+		<!-- 신고 게시물 리스트 -->
+ 	<select id="issue_list" parameterType="Map" resultType="com.ict.healim.vo.BoardVO">
+	    SELECT * FROM tb_bbs 
+	    WHERE issue != 0 AND wr_active = 0
+ 	    ORDER BY upd_dt DESC 
+	    LIMIT #{limit} OFFSET #{offset}
+	</select>
+	
+	<!-- 신고 게시물 삭제-->
+  	<update id="issue_delete" parameterType="String">
+    	update tb_bbs set wr_active = 1 where wr_id = #{wr_id}
+    </update>
+</mapper>

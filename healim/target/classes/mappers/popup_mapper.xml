@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="popup">
+  <insert id="insert" parameterType="pvo">
+   insert into tb_popup(pu_id,pu_title,pu_start_time,pu_end_time,pu_x,pu_y,pu_height,pu_width,f_name) 
+   values(#{pu_id},#{pu_title},#{pu_start_time},#{pu_end_time},#{pu_x},#{pu_y},#{pu_height},#{pu_width},#{f_name})
+  </insert>
+  <select id="select" resultType="pvo">
+  select * from tb_popup
+  </select>
+  <select id="detail" resultType="pvo">
+  select * from tb_popup where pu_id=#{pu_id}
+  </select>
+  <update id="update" parameterType="pvo">
+  update tb_popup 
+  set pu_title=#{pu_title},pu_start_time=#{pu_start_time},pu_end_time=#{pu_end_time},pu_x=#{pu_x},pu_y=#{pu_y},pu_height=#{pu_height},pu_width=#{pu_width},f_name=#{f_name}
+  where pu_id=#{pu_id}
+  </update>
+  <delete id="delete" parameterType="String">
+ 	delete from tb_popup where pu_id = #{pu_id} 
+  </delete>
+  </mapper>
+
+  

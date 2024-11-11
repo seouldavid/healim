@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="HomeDAO">
+    <select id="mapQueryCount" parameterType="msvo" resultType="int">
+        SELECT count(*)
+        FROM  tb_hospital_info
+        WHERE active = 'Y'
+        <if test='city != "전체"'>
+		AND city_name LIKE concat('%', #{city}, '%')
+		</if>
+        AND h_name LIKE concat('%', #{keyword}, '%')
+    </select>  
+    <select id="mapQueryResult" parameterType="msvo" resultType="hvo">
+        SELECT *
+        FROM  tb_hospital_info
+        WHERE active = 'Y'
+        <if test='city != "전체"'>
+		AND city_name LIKE concat('%', #{city}, '%')
+		</if>
+        AND h_name LIKE concat('%', #{keyword}, '%')
+    </select>  
+
+</mapper>

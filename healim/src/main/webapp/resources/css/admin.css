@@ -1,0 +1,196 @@
+
+/*-------------�꽕鍮꾧쾶�씠�뀡,�뿤�뜑css-----------*/
+        /*body 珥덇린�솕*/
+        body{
+            margin: 0px;
+        }
+        /*媛� 諛뺤뒪 �떆媛곹솕*/
+        /*div{
+            border: 1px solid gray;
+        }*/
+        /*
+        1.�쟾泥� �럹�씠吏� 洹몃━�뱶 �젅�씠�븘�썐  
+        2.媛� �뿤�뜑 硫붿씤 �뭼�꽣 �넂�씠議곗젅�븿 �떎留� 硫붿씤�� 理쒖냼 理쒕� 吏��젙:
+                                    -> 硫붿씤 �궡�슜�씠 留롮쑝硫� �뒛�뼱�굹�꽌 �뒪�겕濡ㅻ줈 �꽆�뼱媛�寃뚰븿
+        */
+       .page{
+        display: grid;
+        grid-template-rows: 50px minmax(800px,auto) 80px;
+       }
+       /*硫붿씤�� �꽕鍮꾧쾶�씠�뀡怨� 而⑦뀗痢좊줈 洹몃━�뱶瑜� �씠�슜�빐 �굹�닎*/
+       .main{
+        display: grid;
+        grid-template-columns: 50px 1fr;
+       }
+       /*�꽕鍮꾧쾶�씠�뀡 諛곌꼍�쟻�슜*/
+       .nav{
+        background-color: #EFEFE9;
+        padding: 7px;
+        box-shadow: inset 2px -2px 10px 1px lightgray;
+       }
+       /*�꽕鍮꾧쾶�씠�뀡 由ъ뒪�듃 �뒪���씪 �젣嫄� padding 洹좎씪�븯寃� 諛곗튂*/
+       .nav_button{
+        list-style: none;
+        padding: 10px;
+        margin-top: 3px;
+       }
+       /*�쇊履� 諛붾줈媛�湲� 踰꾪듉蹂� 媛꾧꺽 議곗젙*/
+       .nav_img{
+        margin-bottom: 30px;
+       }
+       /*
+       留⑥쐞 �씠誘몄� �젙�젹 
+       諛곌꼍 �뙆���깋 諛붽퓞
+       */
+       
+       .top1{
+        display: grid;
+        grid-template-columns: auto auto 1fr;
+        grid-template-rows: 50px;
+        background-color: #223030;
+       }
+       
+       /*�씤�씪�씤 釉붾줉*/
+       .bt_header{
+        /* width: 3.1em; */
+        width: 110px;
+        position: relative;
+        top: 15px;
+        left: 10px;
+       }
+       /*ADMINISTRATOR �꼫鍮� �룿�듃 �쐞移� 議곗젙*/
+       .administrator{
+        color: white;
+        line-height: 56px;
+        width: 170px;
+        text-align: center;
+        font-size: 14px;
+        position: relative;
+        left: -5px;
+       }
+       /*house �븘�씠肄� �궗�씠利� 議곗젙*/
+       .houseimg{
+        width: 25px;
+        padding-top: 14px;
+       }
+       /* �솃�럹�씠吏� 踰꾪듉 */
+       .homepagebutton{
+        
+        background-color: transparent;
+        border: 0; 
+        color: white;
+        position: relative;
+        top : -4px;
+        left : 5px;
+       }
+       /*�솃�럹�씠吏� 濡쒓렇�븘�썐 踰꾪듉 議곗젙*/
+       .gohome{
+        display: grid;
+        grid-template-columns:1fr auto auto;
+       
+       }
+       .logoutbutton{
+        width: 70px;
+        background-color: transparent;
+        border: 0; 
+        color: white;
+        position: relative;
+        top : -7px;
+
+        
+       }
+       .logoutbox{
+        margin-left: 20px;
+        margin-right: 20px;
+       }
+       /*h2 留덉쭊 珥덇린�솕*/
+       h2{
+        display: inline-block;
+        margin: 0px;
+        font-size: 20px;
+       }
+       .top2text{
+        width: 300px;
+        margin-left: 20px;
+        padding: 12px 0px;
+        
+       }
+       /*�깙2 諛곌꼍 �깋源� �쟻�슜*/
+       .top2{
+        background-color: rgb(247, 247, 247);
+        border-bottom: 1px solid #ddd;
+       }
+/*----肄섑뀗痢좊컯�뒪css-----------*/
+       /*content諛뺤뒪 洹몃━�뱶�솕 寃��깋李� 諛뺤뒪 �뀒�씠釉� 諛뺤뒪濡� 援щ텇 諛곌꼍�솕硫� �쟻�슜*/
+       .content{
+        display: grid;
+        grid-template-rows: 52px 50px 1fr;
+        background-color: rgb(247, 247, 247);
+       }
+       /*�꽌移� 諛뺤뒪 諛곗튂*/
+       .searchsection{
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        
+       }
+       /*�꽌移섎컯�뒪 �뙣�뵫 �쟻�슜*/
+       .searchbox{
+       padding: 8px 12px;
+       
+       }
+       /*�뀒�씠釉� 諛뺤뒪 諛곌꼍�솕硫� 諛� �뙣�뵫 留덉쭊 �쟻�슜*/
+       .tablebox{       
+        padding: 30px 70px;
+       }
+/* �뀒�씠釉�  */
+/*th 而щ윭 諛곌꼍 �꽕�젙*/
+       th{
+        background-color: #959D90;
+        color: white;
+       }
+       /*th 而щ윭 諛곌꼍 �꽕�젙*/
+       td{
+        background-color: #FFF;
+       }
+       /*蹂대뜑 �뙣�뵫 而щ윭 �꽕�젙*/
+       th,td{
+        border: 1px solid #D6DCE7;
+        padding: 10px;
+       }
+       table{
+        border-collapse: collapse;
+        width: 100%;
+        box-shadow: 0px 1px 15px 1px lightgray;
+       }
+       
+       /* 媛� �뀒�씠釉� �쐞移� �꽕�젙 �뙣�뵫 �꽕�젙 */
+       section{
+       margin-bottom: 50px;
+       
+       }
+       
+       
+       /*寃뚯떆�뙋 愿�由� 硫붾돱 css  洹몃━�뱶, �뒪���씪 留덉쭊 �뙣�뵫 �꽕�젙*/
+       .menu{
+       list-style-type: none;
+       display: grid;
+       grid-template-columns:150px 150px 150px 150px 150px 150px ;
+       padding-left: 0px;
+       margin-bottom: 0px;
+       }
+       .menu li{
+       border: 1px solid #D6DCE7;
+       background-color : #959D90;
+       padding: 10px;
+       border-radius: 8px 8px 0px 0px;
+       text-align: center;
+       color: white;
+       }
+       .menu>li:hover{
+  		cursor: pointer;
+       }
+
+/*-------- footer css �쟻�슜------- */
+       .footer{
+        background-color: #EFEFE9;
+       }

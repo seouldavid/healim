@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="hospital">
+		<select id="select" resultType="hvo">
+			select * from tb_hospital_info
+			order by open_date DESC
+			
+		</select>
+		
+		  <!-- 요양원 리스트 가져오기 -->
+    <select id="selectN2" parameterType="map" resultType="hvo">
+        select * 
+        from tb_hospital_info 
+        where h_type = 'N'
+       order by open_date DESC
+        limit #{limit}
+		offset #{offset} 
+    </select>
+
+    <!-- 요양병원 리스트 가져오기 -->
+    <select id="selectH2"  parameterType="map" resultType="hvo">
+        select * 
+        from tb_hospital_info 
+        WHERE h_type = 'H'
+        order BY open_date DESC
+        limit #{limit}
+		offset #{offset}
+    </select>
+    
+    <select id="count2" parameterType="map" resultType="int">
+		select count(*) from tb_hospital_info
+		where h_type = #{facility2}
+	</select>
+		
+		
+
+
+
+	<select id="search" parameterType="map" resultType="hvo">
+		select *
+		from tb_hospital_info
+		where city_name in
+		<foreach item="district" collection="district" open="("
+			separator="," close=")">
+			#{district}
+		</foreach>
+
+		<if test='type == "N" or type == "H"'>
+			AND h_type = #{type}
+		</if>
+
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+	
+	
+	<select id="countAll" parameterType="map" resultType="int">
+		select count(*)
+		from tb_hospital_info
+		where city_name in
+		<foreach item="district" collection="district" open="("
+			separator="," close=")">
+			#{district}
+		</foreach>
+		<if test='type == "N" or type == "H"'>
+			AND h_type = #{type}
+		</if>
+		
+	</select>
+	
+	
+	<select id="selectH" parameterType="map" resultType="hvo">
+		select *
+		from tb_hospital_info
+		where h_type = 'H'
+		order by h_name
+		limit #{limit} offset #{offset}
+	</select>
+	
+	
+	<select id="count" parameterType="map" resultType="int">
+		select count(*) from tb_hospital_info
+		where h_type = #{facilityType}
+	</select>
+
+
+	<select id="selectN" parameterType="map" resultType="hvo">
+		select *
+		from tb_hospital_info
+		where h_type = 'N'
+		order by h_name
+		limit #{limit}
+		offset #{offset}
+	</select>
+	
+	<select id="location" resultType="String">
+		select DISTINCT city_name
+		from
+		tb_hospital_info
+	</select>
+	
+	
+	<update id="hit" parameterType="String">
+		update tb_hospital_info set hit_cnt = hit_cnt + 1 where h_id = #{h_id}
+	</update>
+	
+	<select id="hDetail" parameterType="String" resultType="hvo">
+		select * from tb_hospital_info where h_id = #{h_id}
+	</select>
+	
+	
+	<insert id="addpick" parameterType="Map">
+		INSERT INTO
+		tb_pick_list(mber_id, h_id)
+		VALUES(#{mber_id}, #{h_id})
+	</insert>
+
+	<select id="getPickCount" parameterType="hvo" resultType="int">
+		SELECT
+		COUNT(*)
+		FROM tb_pick_list
+		WHERE h_id = #{h_id}
+	</select>
+
+	<select id="getHPickList" resultType="hvo">
+		SELECT h.*
+		FROM
+		tb_hospital_info h
+		JOIN (
+		SELECT p.h_id, COUNT(*) AS pick_count
+		FROM tb_pick_list p
+		GROUP BY p.h_id
+		ORDER BY pick_count DESC
+		) AS picked_hospitals ON h.h_id =
+		picked_hospitals.h_id
+		WHERE h.h_type = 'H'
+	</select>
+
+	<select id="getNPickList" resultType="hvo">
+		SELECT h.*
+		FROM
+		tb_hospital_info h
+		JOIN (
+		SELECT p.h_id, COUNT(*) AS pick_count
+		FROM tb_pick_list p
+		GROUP BY p.h_id
+		ORDER BY pick_count DESC
+		) AS picked_hospitals ON h.h_id =
+		picked_hospitals.h_id
+		WHERE h.h_type = 'N'
+	</select>
+
+	<select id="getHRankList" resultType="hvo">
+		SELECT *
+		FROM tb_hospital_info
+		WHERE h_type = 'H'
+		AND grade NOT IN ('해당없음', '등급없음', '등급제외')
+		ORDER BY CAST(REPLACE(IFNULL(grade, '6등급'), '등급', '') AS UNSIGNED)
+		LIMIT 5
+	</select>
+
+	<select id="getNRankList" resultType="hvo">
+		SELECT *
+		FROM
+		tb_hospital_info
+		WHERE h_type = 'N'
+		AND grade NOT IN ('해당없음', '등급없음',
+		'등급제외')
+		ORDER BY
+		CASE grade
+		WHEN 'A등급' THEN 1
+		WHEN 'B등급' THEN 2
+		WHEN 'C등급' THEN 3
+		WHEN 'D등급' THEN 4
+		WHEN 'E등급' THEN 5
+		ELSE 6
+		END
+		limit 5
+	</select>
+	
+</mapper>

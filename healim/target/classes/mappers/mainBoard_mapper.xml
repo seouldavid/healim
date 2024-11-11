@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mainBoard">
+	<!-- 게시판의 게시물 전체 리스트, 메인보드페이지에선 limit을 컨트롤러에서 받아서 limit 3줌. -->
+	<select id="getBbsList" resultType="mvo" parameterType="Map">
+		select * from tb_bbs where bbs_id = #{scvo.bbs_id} and answer_at = 'N'
+		and wr_active='0'
+		<include refid="searchCondition" />
+		ORDER BY group_id DESC, sort_ordr ASC
+		<if test="limit != null">
+			limit #{limit}
+		</if>
+		<if test="limit == null">
+			LIMIT #{scvo.offset}, #{scvo.pageSize}
+		</if>
+	</select>
+	<!-- 게시판의 게시물 전체 리스트 갯수 세기(페이징용) 댓글이 아니면서, 액티브 0(활성화) -->
+	<select id="countwrlist" parameterType="scvo" resultType="int">
+		SELECT count(*)
+		FROM tb_bbs
+		WHERE
+		bbs_id = #{bbs_id}
+		and
+		answer_at = 'N'
+		and
+		wr_active = '0'
+		<include refid="searchCondition2" />
+	</select>
+	<select id="getuserinfo" parameterType="String"
+		resultType="com.ict.healim.vo.MemberVO">
+		select * from tb_member where mber_id=#{mber_id}
+	</select>
+	<sql id="searchCondition">
+		<choose>
+			<when test='scvo.option == "S"'>
+				AND wr_subject LIKE concat('%', #{scvo.keyword}, '%')
+			</when>
+			<when test='scvo.option == "W"'>
+				AND mber_nm LIKE concat('%', #{scvo.keyword}, '%')
+			</when>
+			<when test='scvo.option == "A"'>
+				AND (wr_subject LIKE concat('%', #{scvo.keyword}, '%')
+				OR mber_nm LIKE concat('%', #{scvo.keyword} , '%'))
+			</when>
+		</choose>
+	</sql>
+
+	<sql id="searchCondition2">
+		<choose>
+			<when test='option == "S"'>
+				AND wr_subject LIKE concat('%', #{keyword}, '%')
+			</when>
+			<when test='option == "W"'>
+				AND mber_nm LIKE concat('%', #{keyword}, '%')
+			</when>
+			<when test='option == "A"'>
+				AND (wr_subject LIKE concat('%', #{keyword}, '%')
+				OR mber_nm LIKE concat('%', #{keyword}, '%'))
+			</when>
+		</choose>
+	</sql>
+
+	<!-- 게시판이름 알아내기 위한 select문 -->
+	<select id="getBbsName" resultType="String"
+		parameterType="String">
+		select bbs_nm from tb_bbs_master where bbs_id =
+		#{bbs_id}
+	</select>
+	<!-- 게시물아이디와 게시판아이디로 글 검색. 게시물 아이디 wr_id로도 충분하지만 상황 대비해서 일단은 같이받음. -->
+	<select id="getWrList" resultType="mvo" parameterType="Map">
+		select *
+		from tb_bbs where bbs_id = #{bbs_id} AND wr_id = #{wr_id}
+	</select>
+	<!-- 글 삽입 -->
+	<insert id="insert" parameterType="mvo">
+		<selectKey keyProperty="group_id" resultType="String"
+			order="BEFORE">
+			select (IFNULL(MAX(wr_id),0)+1) as group_id from tb_bbs
+		</selectKey>
+		INSERT INTO tb_bbs (
+		bbs_id,
+		wr_subject,
+		wr_content,
+		atch_file_id,
+		mber_id,
+		mber_nm,
+		password,
+		parent_id,
+		group_id,
+		wr_active,
+		h_id,
+		h_score,
+		sort_ordr
+		)
+		VALUES (
+		#{bbs_id},
+		#{wr_subject},
+		#{wr_content},
+		#{atch_file_id},
+		#{mber_id},
+		#{mber_nm},
+		#{password},
+		#{parent_id},
+		<choose>
+			<when test="parent_id != null and parent_id != ''">
+				#{parent_id}
+			</when>
+			<otherwise>
+				#{group_id}
+			</otherwise>
+		</choose>
+		,
+		0,
+		#{h_id},
+		#{h_score},
+		#{sort_ordr}
+		);
+	</insert>
+	<update id="update" parameterType="mvo">
+    UPDATE tb_bbs
+    SET 
+        wr_subject = #{wr_subject},
+        wr_content = #{wr_content},
+        atch_file_id = #{atch_file_id},
+        mber_id = #{mber_id},
+        mber_nm = #{mber_nm},
+        password = #{password},
+        issue = issue + 1,
+             <if test="issue_option != null or issue_option != ''">
+            issue_option = CASE 
+                           WHEN issue_option IS NULL THEN #{issue_option} 
+                           ELSE CONCAT(issue_option, ',', #{issue_option})
+                       END,
+        </if>
+        <if test="issue_post != null or issue_post != ''">
+          issue_post = CASE 
+                         WHEN issue_post IS NULL THEN #{issue_post} 
+                         ELSE CONCAT(issue_post, ',', #{issue_post})
+                     END,
+        </if>
+        <if test="issue_people != null or issue_people != ''">
+            issue_people = CASE 
+                           WHEN issue_people IS NULL THEN #{issue_people} 
+                           ELSE CONCAT(issue_people, ',', #{issue_people})
+                       END
+        </if>
+    WHERE wr_id = #{wr_id}
+</update>
+	<update id="delete" parameterType="mvo">
+		update tb_bbs
+		set wr_active = 1
+		where
+		wr_id=#{wr_id} and bbs_id=#{bbs_id}
+	</update>
+	<insert id="comminsert" parameterType="mvo">
+		INSERT INTO tb_bbs(
+		parent_id,
+		bbs_id,
+		mber_id,
+		mber_nm,
+		wr_content,
+		group_id,
+		password,
+		answer_at)
+		VALUES(
+		#{parent_id},
+		#{bbs_id},
+		#{mber_id},
+		#{mber_nm},
+		#{wr_content},
+		#{parent_id},
+		#{password},
+		#{answer_at})
+
+
+	</insert>
+	<select id="commselect" parameterType="String" resultType="mvo">
+        select * from tb_bbs
+        where parent_id =#{wr_id}
+        and wr_active='0'
+    </select>
+	<!-- 자식글(답글)중에 가장높은 sortordr 검색 -->
+	<select id="childselect" resultType="int" parameterType="String">
+		select
+		ifnull( max(sort_ordr) , 0)
+		FROM tb_bbs
+		where parent_id = #{parent_id}
+	</select>
+	<select id="cons" parameterType="map" resultType="mvo">
+		select *
+		from tb_bbs
+		where mber_id = #{mber_id} and bbs_id = 'CONS' and
+		parent_id is null
+		limit #{limit} offset #{offset}
+	</select>
+	<select id="all" parameterType="map" resultType="mvo">
+		select * from
+		tb_bbs
+		where mber_id = #{mber_id}
+		limit #{limit} offset #{offset}
+	</select>
+	<select id="countall" parameterType="String" resultType="int">
+		select
+		count(*) from tb_bbs
+		where mber_id = #{mber_id}	
+	</select>
+	<select id="countcons" parameterType="map" resultType="int">
+		select *
+		from tb_bbs
+		where mber_id = #{mber_id} and bbs_id = 'CONS' and
+		parent_id is null
+		limit #{limit} offset #{offset}
+	</select>
+	<update id="updateviewnum" parameterType="String">
+		update tb_bbs
+		set rdcnt
+		= rdcnt+1
+		where wr_id
+		=#{wr_id}
+	</update>
+	<select id="gethid" parameterType="String" resultType="int">
+		select
+		h_id
+		from tb_hospital_info
+		where h_name = #{h_name}
+	</select>
+	<select id="gethospitalconsult" parameterType="String"
+		resultType="mvo">
+		select *
+		from tb_bbs
+		where h_id = #{h_id}
+		and bbs_id='CONS'
+		ORDER BY group_id DESC, sort_ordr ASC
+	</select>
+	<!-- h_id가 같으면서,해당 wrid를  parentid를 가진 자식글의 갯수.(answer_at n으로 댓글은 거르고 답글만) -->
+	<select id="getcounthospitalconsultreple" parameterType="String"
+		resultType="int">
+		select count(*)
+		from tb_bbs
+		where answer_at = 'N'
+		and parent_id =#{wr_id}
+	</select>
+	<select id="getcheckconsultreple" parameterType="String" resultType="int">
+	select count(*)
+	from tb_bbs
+	where h_id = #{h_id}
+	and bbs_id='CONS'
+	</select>
+	<select id="getreview" parameterType="String" resultType="mvo">
+	select *
+	from tb_bbs
+	where h_id
+	=#{h_id}
+	and bbs_id='REVIEW'
+	and wr_active='0'
+	order by group_id desc
+	</select>
+</mapper>

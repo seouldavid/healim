@@ -1,0 +1,8 @@
+eclipse.preferences.version=1
+encoding//src/main/java/com/ict/healim/controller/HomeController.java=UTF-8
+encoding//src/main/java/com/ict/healim/controller/MainBoardController.java=UTF-8
+encoding//src/main/java/com/ict/healim/controller/SnSLoginController.java=UTF-8
+encoding//src/main/java/com/ict/healim/dao/MainBoardDAO.java=UTF-8
+encoding//src/main/java/com/ict/healim/service/MainBoardService.java=UTF-8
+encoding//src/main/java/com/ict/healim/vo/Paging.java=UTF-8
+encoding//src/main/webapp/WEB-INF/views/home.jsp=UTF-8

@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="HospitalManageDAO">
+	<select id="getBothList" parameterType="apvo" resultType="hosptvo">
+		select  h_id, h_regno, h_name, h_type, zipcode, city_code, city_name, open_date, addr, latitude, longitude, 
+				grade, type_code, type_name, operator, bed_cnt, room_cnt, treatment, area, reg_cnt, curr_cnt, doc_cnt, 
+				care_cnt, social_cnt, nurse_cnt, nutri_cnt, recommend, hit_cnt, tel_no, remarks, crt_by, crt_dt, 
+				upd_by, upd_dt, active, contents, f_name1, f_name2 , 
+				if( length(f_name1) > 0,1, 0) + if( length(f_name2) > 0,1, 0) as file_cnt ,email
+        from tb_hospital_info 
+		where active = 'Y'
+		<include refid="searchCondition"/>
+		ORDER BY city_name , h_name 
+		LIMIT #{offset}, #{pageSize}
+		
+	</select>
+
+    <select id="searchResultCnt" parameterType="apvo" resultType="int">
+        SELECT count(*)
+        FROM  tb_hospital_info
+        WHERE active = 'Y'
+        <include refid="searchCondition"/>
+    </select>  
+    
+    <sql id="searchCondition">
+         AND h_type LIKE concat('%', #{h_type}, '%') 
+        <choose>
+            <when test='option == "N"'>
+                AND h_name LIKE concat('%', #{keyword}, '%')
+            </when>
+            <when test='option == "C"'>
+                AND city_name LIKE concat('%', #{keyword}, '%')
+            </when>
+            <when test='option == "A"'>
+                AND (h_name   LIKE concat('%', #{keyword}, '%')
+                OR   city_name LIKE concat('%', #{keyword}, '%'))
+            </when>
+        </choose>
+    </sql>
+
+    <select id="hospitalDetail" parameterType="String" resultType="hosptvo">
+        select * from tb_hospital_info where h_id = #{h_id}
+    </select>
+<update id="hospitalEdit" parameterType="hosptvo">
+    update tb_hospital_info
+    <trim prefix="set" suffixOverrides=",">
+	        <if test="h_name != null">
+	            h_name = #{h_name},
+	        </if>
+	        <if test="operator != null">
+	            operator = #{operator, jdbcType=VARCHAR},
+	        </if>
+	        <if test="city_code != null">
+	            city_code = #{city_code, jdbcType=VARCHAR},
+	        </if>
+	        <if test="tel_no != null">
+	            tel_no = #{tel_no, jdbcType=VARCHAR},
+	        </if>
+	        <if test="zipcode != null">
+	            zipcode = #{zipcode, jdbcType=VARCHAR},
+	        </if>
+	        <if test="addr != null">
+	            addr = #{addr, jdbcType=VARCHAR},
+	        </if>
+	        <if test="extraAddress != null">
+	            extraAddress = #{extraAddress, jdbcType=VARCHAR},
+	        </if>
+	        <if test="grade != null">
+	            grade = #{grade, jdbcType=VARCHAR},
+	        </if>
+	        <if test="remarks != null">
+	            remarks = #{remarks, jdbcType=VARCHAR},
+	        </if>
+	        <if test="f_name1 != null">
+	            f_name1 = #{f_name1, jdbcType=VARCHAR},
+	        </if>
+	        <if test="f_name2 != null">
+	            f_name2 = #{f_name2, jdbcType=VARCHAR},
+	        </if>
+	        <if test="h_type != null and h_type != ''">
+	            h_type = #{h_type},
+	        </if>
+	        <if test="upd_by != null and upd_by != ''">
+	            upd_by = #{upd_by},
+	        </if>
+	        <if test="open_date != null and open_date != ''">
+	            open_date = #{open_date},
+	        </if>
+	        <if test="doc_cnt != null and doc_cnt != ''">
+	            doc_cnt = #{doc_cnt},
+	        </if>
+	        <if test="area != null and area != ''">
+	            area = #{area},
+	        </if>
+	        <if test="room_cnt != null and room_cnt != ''">
+	            room_cnt = #{room_cnt},
+	        </if>
+	        <if test="bed_cnt != null and bed_cnt != ''">
+	            bed_cnt = #{bed_cnt},
+	        </if>
+	        <if test="reg_cnt != null and reg_cnt != ''">
+	            reg_cnt = #{reg_cnt}, 
+	        </if>
+	        <if test="curr_cnt != null and curr_cnt != ''">
+	            curr_cnt = #{curr_cnt}, 
+	        </if>
+	        <if test="social_cnt != null and social_cnt != ''">
+	            social_cnt = #{social_cnt}, 
+	        </if>
+	        <if test="nurse_cnt != null and nurse_cnt != ''">
+	            nurse_cnt = #{nurse_cnt}, 
+	        </if>
+	        <if test="care_cnt != null and care_cnt != ''">
+	            care_cnt = #{care_cnt}, 
+	        </if>
+	        <if test="nutri_cnt != null and nutri_cnt != ''">
+	            nutri_cnt = #{nutri_cnt}, 
+	        </if>
+	        <if test="f_name1 == null or f_name1 == ''">
+	            f_name1 = #{f_name1, jdbcType=VARCHAR}, 
+	        </if>
+	        <if test="f_name2 == null or f_name2 == ''">
+	            f_name2 = #{f_name2, jdbcType=VARCHAR},
+	        </if>
+	        <if test="city_name != null">
+	            city_name = #{city_name},
+	        </if>
+	        <if test="email == null or email == ''">
+	            email = #{email, jdbcType=VARCHAR},
+	        </if>	
+	            upd_dt = now()        
+	    </trim>
+	    where h_id = #{h_id}
+	</update>
+	 <insert id="hospitalReg" parameterType = "hosptvo">
+		insert into tb_hospital_info
+		 ( h_name, operator , city_code , city_name , tel_no , zipcode 
+		   , addr , grade , remarks , h_type , crt_by , upd_by 
+		   , open_date 
+		   , doc_cnt 
+		   , area 
+		   , room_cnt 
+		   , bed_cnt 
+		   , reg_cnt 
+		   , curr_cnt 
+		   , social_cnt 
+		   , nurse_cnt 
+		   , care_cnt 
+		   , nutri_cnt
+		   , f_name1
+		   , f_name2
+		   , email 
+		   , extraAddress)
+		values
+		 ( #{h_name}, #{operator, jdbcType=VARCHAR}, #{city_code, jdbcType=VARCHAR}, #{city_name, jdbcType=VARCHAR}, #{tel_no, jdbcType=VARCHAR} , #{zipcode, jdbcType=VARCHAR}
+		   , #{addr, jdbcType=VARCHAR} , #{grade, jdbcType=VARCHAR} ,#{remarks, jdbcType=VARCHAR},  #{h_type} ,  #{crt_by} , #{upd_by}
+		   , #{open_date} 
+		    <if test="doc_cnt != null and doc_cnt != ''">
+   				, #{doc_cnt, jdbcType=INTEGER}
+			</if>
+			<if test="doc_cnt == null or doc_cnt == ''">
+  				,  0
+			</if>
+		   	<if test="area != null and area != ''">
+   				, #{area, jdbcType=DOUBLE}
+			</if>
+			<if test="area == null or area == ''">
+  				,  0.0
+			</if>
+		   	<if test="room_cnt != null and room_cnt != ''">
+   				, #{room_cnt, jdbcType=INTEGER}
+			</if>
+			<if test="room_cnt == null or room_cnt == ''">
+  				,  0
+			</if>
+			<if test="bed_cnt != null and bed_cnt != ''">
+   				, #{bed_cnt, jdbcType=INTEGER}
+			</if>
+			<if test="bed_cnt == null or bed_cnt == ''">
+  				,  0
+			</if>
+		   	<if test="reg_cnt != null and reg_cnt != ''">
+   				, #{reg_cnt, jdbcType=INTEGER}
+			</if>
+			<if test="reg_cnt == null or reg_cnt == ''">
+  				,  0
+			</if>
+			<if test="curr_cnt != null and curr_cnt != ''">
+   				, #{curr_cnt, jdbcType=INTEGER}
+			</if>
+			<if test="curr_cnt == null or curr_cnt == ''">
+  				,  0
+			</if>		   
+		   	<if test="social_cnt != null and social_cnt != ''">
+   				, #{social_cnt, jdbcType=INTEGER}
+			</if>
+			<if test="social_cnt == null or social_cnt == ''">
+  				,  0
+			</if>
+			<if test="nurse_cnt != null and nurse_cnt != ''">
+   				, #{nurse_cnt, jdbcType=INTEGER}
+			</if>
+			<if test="nurse_cnt == null or nurse_cnt == ''">
+  				,  0
+			</if>
+		   	<if test="care_cnt != null and care_cnt != ''">
+   				, #{care_cnt, jdbcType=INTEGER}
+			</if>
+			<if test="care_cnt == null or care_cnt == ''">
+  				,  0
+			</if>
+			<if test="nutri_cnt != null and nutri_cnt != ''">
+   				, #{nutri_cnt, jdbcType=INTEGER}
+			</if>
+			<if test="nutri_cnt == null or nutri_cnt == ''">
+  				,  0
+			</if>	
+  				,  #{f_name1, jdbcType=VARCHAR}
+  				,  #{f_name2, jdbcType=VARCHAR}
+  				,  #{email, jdbcType=VARCHAR}
+  				,  #{extraAddress, jdbcType=VARCHAR}
+                )
+	 </insert>
+    <select id="cityList" resultType="cityvo">
+    	select city_code , city_name 
+		from tb_city_info 
+		order by city_name 
+    </select>
+    
+    <update id="hospitalDelete" parameterType="Map">
+    	update tb_hospital_info 
+    	set active = 'N' ,
+    	    upd_by = #{user_id},
+    	    upd_dt = now()
+    	 where h_id = #{h_id}
+    </update>
+    
+    <select id="newRegNum" parameterType="Map" resultType="int" >
+		  select ( if( MOD(N.num, 10) > 0 , 1 , 0) +  FLOOR(N.num / 10) ) 
+            from 
+            ( SELECT ROW_NUMBER() OVER(ORDER BY city_name, h_name) as num,  h_name , city_name, crt_dt
+                FROM vi_insert_paging 
+                where true
+		         <choose>
+		            <when test='scvo.option == "N"'>
+		                AND h_name LIKE concat('%', #{scvo.keyword}, '%')
+		            </when>
+		            <when test='scvo.option == "C"'>
+		                AND city_name LIKE concat('%', #{scvo.keyword}, '%')
+		            </when>
+		            <when test='scvo.option == "A"'>
+		                AND (h_name   LIKE concat('%', #{scvo.keyword}, '%')
+		                OR   city_name LIKE concat('%', #{scvo.keyword}, '%'))
+		            </when>
+		        </choose>   ) AS N
+            where  N.h_name = #{h_name}
+            and DATE_FORMAT(N.crt_dt, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')
+    </select>
+    
+    <sql id="searchConditionAll">
+        <choose>
+            <when test='option == "N"'>
+                AND h_name LIKE concat('%', #{keyword}, '%')
+            </when>
+            <when test='option == "C"'>
+                AND city_name LIKE concat('%', #{keyword}, '%')
+            </when>
+            <when test='option == "A"'>
+                AND (h_name   LIKE concat('%', #{keyword}, '%')
+                OR   city_name LIKE concat('%', #{keyword}, '%'))
+            </when>
+        </choose>
+    </sql>
+    
+<update id="configEdit" parameterType="acfvo">
+    UPDATE tb_config
+    <trim prefix="SET" suffixOverrides=",">
+        <if test="cf_title != null">
+            cf_title = #{cf_title},
+        </if>
+        <if test="cf_admin != null">
+            cf_admin = #{cf_admin, jdbcType=VARCHAR},
+        </if>
+        <if test="cf_admin_email != null">
+            cf_admin_email = #{cf_admin_email, jdbcType=VARCHAR},
+        </if>
+        <if test="cf_admin_email_name != null">
+            cf_admin_email_name = #{cf_admin_email_name, jdbcType=VARCHAR},
+        </if>
+        <if test="cf_use_email_certify != null">
+            cf_use_email_certify = #{cf_use_email_certify, jdbcType=VARCHAR},
+        </if>
+        <if test="cf_nick_modify != null">
+            cf_nick_modify = #{cf_nick_modify, jdbcType=VARCHAR},
+        </if>
+        <if test="cf_filter != null">
+            cf_filter = #{cf_filter, jdbcType=VARCHAR},
+        </if>
+        <if test="cf_use_hp != null">
+            cf_use_hp = #{cf_use_hp, jdbcType=VARCHAR},
+        </if>
+        <if test="cf_req_hp != null">
+            cf_req_hp = #{cf_req_hp, jdbcType=VARCHAR},
+        </if>
+        <if test="cf_prohibit_id != null">
+            cf_prohibit_id = #{cf_prohibit_id, jdbcType=VARCHAR},
+        </if>
+        <if test="cf_stipulation != null and cf_stipulation != ''">
+            cf_stipulation = #{cf_stipulation},
+        </if>
+        <if test="cf_privacy != null and cf_privacy != ''">
+            cf_privacy = #{cf_privacy},
+        </if>
+        <if test="cf_social_login_use != null and cf_social_login_use != ''">
+            cf_social_login_use = #{cf_social_login_use},
+        </if>
+        <if test="cf_naver_use != null and cf_naver_use != ''">
+            cf_naver_use = #{cf_naver_use},
+        </if>
+        <if test="cf_kakao_use != null and cf_kakao_use != ''">
+            cf_kakao_use = #{cf_kakao_use},
+        </if>
+        <if test="cf_naver_clientid != null and cf_naver_clientid != ''">
+            cf_naver_clientid = #{cf_naver_clientid},
+        </if>
+        <if test="cf_naver_secret != null and cf_naver_secret != ''">
+            cf_naver_secret = #{cf_naver_secret},
+        </if>
+        <if test="cf_kakao_rest_key != null and cf_kakao_rest_key != ''">
+            cf_kakao_rest_key = #{cf_kakao_rest_key},
+        </if>
+        <if test="cf_kakao_client_secret != null and cf_kakao_client_secret != ''">
+            cf_kakao_client_secret = #{cf_kakao_client_secret},
+        </if>
+        <if test="cf_kakao_js_apikey != null and cf_kakao_js_apikey != ''">
+            cf_kakao_js_apikey = #{cf_kakao_js_apikey},
+        </if>
+        <if test="cf_open_modify != null and cf_open_modify != ''">
+            cf_open_modify = #{cf_open_modify},
+        </if>
+        <if test="cf_cert_req != null and cf_cert_req != ''">
+            cf_cert_req = #{cf_cert_req},
+        </if>
+        <if test="cf_naver_callback != null and cf_naver_callback != ''">
+            cf_naver_callback = #{cf_naver_callback},
+        </if>
+        <if test="cf_kakao_redirect != null and cf_kakao_redirect != ''">
+            cf_kakao_redirect = #{cf_kakao_redirect}
+        </if>
+    </trim>
+    WHERE cf_id = #{cf_id}
+</update>
+    <select id="configSelect" resultType = "acfvo" >
+    	select * from tb_config
+    </select>
+    
+</mapper>

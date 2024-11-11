@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="admin">
+
+	<select id="select" resultType="avo">
+		select * from tb_admin
+	</select>
+
+	<insert id="insert" parameterType="avo">
+		insert into tb_admin(admin_id,
+		admin_pw, authority_level, status, last_visit,chat_auth, popup_auth, board_auth)
+		values(#{admin_id},
+		#{admin_pw}, #{authority_level}, #{status}, now(), #{chat_auth}, #{popup_auth}, #{board_auth})
+	</insert>
+
+	<delete id="delete" parameterType="String">
+		delete from tb_admin where
+		admin_id = #{admin_id}
+	</delete>
+
+	<select id="detail" resultType="avo">
+		select * from tb_admin where
+		admin_id =#{admin_id}
+	</select>
+
+	<update id="update" parameterType="avo">
+		update tb_admin
+		set admin_pw = #{admin_pw}, chat_auth=#{chat_auth}, popup_auth=#{popup_auth}, board_auth=#{board_auth}, authority_level = #{authority_level}, status = #{status}
+		where admin_id = #{admin_id}
+	</update>
+
+
+</mapper>

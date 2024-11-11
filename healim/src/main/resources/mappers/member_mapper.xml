@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="loginDAO">
+
+	<select id="loginchk" parameterType="com.ict.healim.vo.MemberVO"
+		resultType="com.ict.healim.vo.MemberVO">
+		select * from tb_member where mber_id = #{mber_id}
+	</select>
+	
+	<select id="getMemberList"
+		resultType="com.ict.healim.vo.MemberVO">
+		SELECT
+		m.mber_id,
+		m.mber_nm,
+		m.phone_chk,
+		m.active,
+		COALESCE(w.post_cnt,
+		0) AS post_cnt,
+		COALESCE(w.reply_cnt, 0) AS reply_cnt,
+		m.violation_count,
+		m.email_status,
+		m.adv_status,
+		m.mber_status,
+		m.mber_auth,
+		m.mbtlnum,
+		l.login_dt,
+		m.sbscrb_de
+		FROM
+		tb_member m
+		LEFT JOIN
+		(SELECT mber_id, MAX(login_dt) AS login_dt
+		FROM tb_member_log
+		GROUP BY
+		mber_id) l ON m.mber_id = l.mber_id
+		LEFT JOIN
+		vi_member_write_cnt w ON
+		m.mber_id = w.mber_id
+		WHERE
+		m.mber_level = 'U'
+		ORDER BY
+		m.mber_id
+	</select>
+	
+	<update id="updateMemberAuth" parameterType="com.ict.healim.vo.MemberVO">
+		UPDATE tb_member
+		SET email_status = #{email_status},
+		adv_status = #{adv_status},
+		mber_status = #{mber_status}, 
+		mber_auth = #{mber_auth}
+		WHERE mber_id = #{mber_id};
+	</update>
+	
+	<delete id="getMemberDelete" parameterType="String">
+		delete from tb_member where mber_id = #{mber_id}
+	</delete>
+	
+	<select id="authDetail" parameterType="String" resultType="com.ict.healim.vo.MemberVO">
+		select *
+		from tb_member where mber_id = #{mber_id}
+	</select>
+	
+	<delete id="delete" parameterType="com.ict.healim.vo.MemberVO">
+		delete from tb_member where mber_id = #{mber_id}
+	</delete>
+	
+	<update id="deleteMembersByIds" parameterType="list">
+    UPDATE tb_member
+    SET active = 1 
+    WHERE mber_id IN
+    <foreach item="id" collection="list" open="(" separator="," close=")">
+        #{id}
+    </foreach>
+	</update>
+	
+	<update id="getMemberUpdate" parameterType="com.ict.healim.vo.MemberVO">
+		UPDATE tb_member
+		SET member_delete_reason = #{member_delete_reason},
+		deleted_by_admin = #{deleted_by_admin},
+		active = 1
+		WHERE mber_id = #{mber_id}
+	</update>
+	
+	<update id="loginTimeUpdate" parameterType="com.ict.healim.vo.MemberVO">
+     update tb_member_log
+     set login_dt = NOW()
+     where mber_id = #{mber_id}
+    </update>
+</mapper>

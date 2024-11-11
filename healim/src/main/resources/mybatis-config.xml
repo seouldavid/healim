@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- MyBatis가 해당 값의 타입을 명시적으로 알지 못하면 null 취급하게 된다. -->
+	<!-- 매번 쿼리를 실행할 때마다 데이터베이스에 요청이 가고, 결과를 새로 받아옵니다. -->
+	<settings>
+		<setting name="jdbcTypeForNull" value="NULL" />
+		<setting name="cacheEnabled" value="false" />
+	</settings>
+	<typeAliases>
+	<typeAlias type="com.ict.healim.vo.AdmHosPagingVO" alias="apvo"/>
+		<typeAlias type="com.ict.healim.vo.PopupVO" alias="pvo" />
+		<typeAlias type="com.ict.healim.vo.AdminVO" alias="avo" />
+		<typeAlias type="com.ict.healim.vo.HospitalVO" alias="hvo" />
+		<typeAlias type="com.ict.healim.vo.HosptVO" alias="hosptvo" />
+		<typeAlias type="com.ict.healim.vo.CityVO" alias="cityvo" />
+		<typeAlias type="com.ict.healim.vo.MapSearchVO" alias="msvo" />
+		<typeAlias type="com.ict.healim.vo.AdmCfgVO" alias="acfvo" />
+		<typeAlias type="com.ict.healim.vo.MainBoardVO" alias="mvo" />
+		<typeAlias type="com.ict.healim.vo.SearchVO" alias="scvo" />
+		<typeAlias type="com.ict.healim.vo.MainBoardPagingVO" alias="mpvo" />
+		<typeAlias type="com.ict.healim.vo.RecentlyViewVo" alias="rvvo" />
+		<typeAlias type="com.ict.healim.vo.JoinVO" alias="jvo"/>
+		<typeAlias type="com.ict.healim.vo.LoginMemberVO" alias="lvo"/> 
+		
+	</typeAliases>
+	<mappers>
+		<mapper resource="mappers/login_mapper.xml" />
+		<mapper resource="mappers/popup_mapper.xml" />
+		<mapper resource="mappers/hospital_mapper.xml" />
+		<mapper resource="mappers/hospitalManage_mapper.xml" />
+		<mapper resource="mappers/home_mapper.xml" />
+		<mapper resource="mappers/admin_mapper.xml" />
+		<mapper resource="mappers/mainBoard_mapper.xml" />
+		<mapper resource="mappers/member_mapper.xml" />
+		<mapper resource="mappers/recentlyview_mapper.xml" />
+		<mapper resource="mappers/member2_mapper.xml" />
+		<mapper resource="mappers/admin_board_mapper.xml" />
+	</mappers>
+</configuration>

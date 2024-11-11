@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="member">
+	<!-- 회원가입 쿼리 -->
+	<insert id="join" parameterType="jvo">
+		insert into tb_member(mber_id, password, mber_nm, mbtlnum, mber_email_adres, sbscrb_de, crt_by)
+		values(#{mber_id}, #{password}, #{mber_nm}, #{mbtlnum}, #{mber_email_adres}, #{sbscrb_de}, #{crt_by})
+	</insert>
+	<!-- 이메일 중복 확인 쿼리 -->
+	<select id="countByEmail" parameterType="String" resultType="int">
+    	SELECT COUNT(*) FROM tb_member WHERE mber_id = #{mber_id}
+	</select>
+	<!-- 로그인 쿼리 -->
+	<select id="loginchk" parameterType="lvo" resultType="lvo">
+		select * from tb_member where mber_id = #{mber_id}
+	</select>
+	
+	<!-- 마이페이지 정보보기 쿼리 -->
+	<select id="myPage" parameterType="String" resultType="jvo">
+		select * from tb_member where mber_id = #{mber_id}
+	</select>
+	
+	<!-- 마이페이지 변경사항 수정 쿼리 -->
+	<update id="update" parameterType="jvo">
+		update tb_member 
+		set 
+			mber_id = #{mber_id}, 
+			password = #{password}, 
+			mber_nm = #{mber_nm}, 
+			mbtlnum = #{mbtlnum} 
+		where 
+			mber_id = #{mber_id}
+	</update>
+	<!-- 요양 병원 찜 가져오기 -->
+	<select id="getHPick" parameterType="String" resultType="hvo">
+		SELECT h.* FROM tb_pick_list p 
+		JOIN tb_hospital_info h ON p.h_id = h.h_id 
+		WHERE p.mber_id = #{mber_id} AND h.h_type = 'H'
+	</select>
+	
+	<!-- 요양 원 찜 가져오기 -->
+	<select id="getNPick" parameterType="String" resultType="hvo">
+		SELECT h.* FROM tb_pick_list p 
+		JOIN tb_hospital_info h ON p.h_id = h.h_id 
+		WHERE p.mber_id = #{mber_id} AND h.h_type = 'N'
+	</select>
+	
+	<!-- 마이페이지 찜 삭제 -->
+	<delete id="removePick" parameterType="Map">
+		DELETE FROM tb_pick_list 
+		WHERE mber_id = #{mber_id} AND h_id = #{h_id}
+	</delete>
+	
+	<!-- 요양병원 찜 갯수 가져오기 -->
+	<select id="getHPickCount" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM tb_pick_list p 
+		JOIN tb_hospital_info h ON p.h_id = h.h_id 
+		WHERE p.mber_id = #{mber_id} AND h.h_type = 'H'
+	</select>
+	
+	<!-- 요양 원 찜 갯수 가져오기 -->
+	<select id="getNPickCount" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM tb_pick_list p 
+		JOIN tb_hospital_info h ON p.h_id = h.h_id 
+		WHERE p.mber_id = #{mber_id} AND h.h_type = 'N'
+	</select>
+	
+	
+	<!-- 회원가입 로그 저장 -->
+	<insert id="logInsert" parameterType="jvo">
+		insert into tb_member_log(mber_id, login_dt)
+		values(#{mber_id}, NOW())
+	</insert>
+</mapper>
